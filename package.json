@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "build": "npm run create && browserify src/process.js -s Process > dist/process.js",
-    "create": "IF NOT exist .\\dist  mkdir .\\dist "
+    "create": "IF NOT exist .\\dist ( mkdir .\\dist )"
   },
   "repository": {
     "type": "git",
