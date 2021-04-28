@@ -5,7 +5,7 @@ const config = {
     model: {
       name: "Process",
       run: "run",
-      url: "dist/process.js", // todo: fix this in github pages deployment
+      url: "src/process.built.js",
     },
   },
 };
@@ -138,7 +138,7 @@ const input_data = {
 const params = {
   column: "data",
   data: input_data,
-  iterations: 50,
+  iterations: 10,
   method: "Maximum Likelihood",
   d: 0,
   p: 1,
