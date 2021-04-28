@@ -4,7 +4,8 @@
   "description": "ARIMA algorithms in the browser",
   "main": "index.js",
   "scripts": {
-    "build-process": "browserify src/process.js -s Process > dist/process.js"    
+    "build": "npm run create && browserify src/process.js -s Process > dist/process.js",
+    "create": "IF NOT exist .\\dist ( mkdir .\\dist )"
   },
   "repository": {
     "type": "git",
@@ -14,12 +15,12 @@
   "author": "Davide Ghiotto",
   "license": "MIT",
   "dependencies": {
-    "arima": "^0.1.0",    
+    "arima": "^0.1.0",
     "online-autocorrelation": "0.0.1"
   },
   "devDependencies": {
-    "browserify": "^16.5.1",    
-    "uglify-es": "^3.3.10"   
+    "browserify": "^16.5.1",
+    "uglify-es": "^3.3.10"
   },
   "bugs": {
     "url": "https://github.com/davide97g/arima-js/issues"
