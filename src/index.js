@@ -5,7 +5,7 @@ const config = {
     model: {
       name: "Process",
       run: "run",
-      url: "dist/process.js",
+      url: "dist/process.js", // todo: fix this in github pages deployment
     },
   },
 };
