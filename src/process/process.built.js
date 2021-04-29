@@ -826,7 +826,7 @@ module.exports = class Process {
    * @param {*} params
    * @returns the results of the computation
    */
-  _compute(params) {
+  compute(params) {
     const ts = this.records.map((row) => +row[params.column]);
 
     if (params.parameters === "Auto") {
@@ -916,7 +916,7 @@ module.exports = class Process {
       });
     });
 
-    return this._compute(params);
+    return this.compute(params);
   }
 
   /**

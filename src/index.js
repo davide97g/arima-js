@@ -1,11 +1,15 @@
-import Port from "./port/port.js";
+let worker;
+
+const fetch = window["fetch"];
 
 let output = (res) => {
   console.info("[Index] callback output", res);
   config.model.methods.forEach((method) => {
-    if (res[method]) console.info("-> Method", method);
+    if (res[method]) console.info("-> Method", method); // todo: generalize this
   });
 };
+
+// todo: remove this
 const config = {
   model: {
     name: "Process",
@@ -15,7 +19,7 @@ const config = {
   callback: output,
 };
 
-const port = new Port(config);
+// const port = new Port(config);
 
 const input_data = {
   data: [
@@ -157,12 +161,60 @@ const params = {
   timesteps: 20,
 };
 
-document
-  .getElementById("run")
-  .addEventListener("click", () => port.run(params));
+// ****************** THIS IS THE NEW PORT ******************
+
+function init(model) {
+  console.log("[Port] Initializing model", model);
+
+  worker = new Worker("./src/port/worker.js");
+
+  worker.onmessage = (e) => {
+    const data = e.data;
+    console.log("[Port] Response from worker:", data);
+    if (data._status) console.log("[Port] Worker loaded successfully");
+    else {
+      // ? check for the initialization of the worker
+      if (!data) throw new Error("[Port] Invalid output data");
+      else if (!config.callback || typeof config.callback !== "function")
+        throw new Error("[Port] Callback is not a function");
+      else config.callback(data);
+    }
+  };
+
+  worker.onerror = (e) => console.error("[Port] Error from worker:", e);
+
+  if (model.url) {
+    fetch(model.url)
+      .then((res) => res.text())
+      .then((res) => {
+        console.log("[Port] Loaded js code for worker");
+        model.code = res;
+        worker.postMessage(model);
+      });
+  }
+}
+
+function run(params) {
+  if (!params) throw new Error("[Port] Params not specified");
+  // We have all input values here, pass them to worker, window.modelFunc or tf
+  worker.postMessage({ method: "train", params: params });
+}
+
+function predict(data) {
+  if (!data) throw new Error("[Port] Data not specified");
+  worker.postMessage({ method: "predict", params: data });
+}
+
+function getModel() {
+  worker.postMessage({ method: "getModel" });
+}
+
+init(config.model);
+
+document.getElementById("run").addEventListener("click", () => run(params));
 
 document
   .getElementById("predict")
-  .addEventListener("click", () => port.predict(test_data));
+  .addEventListener("click", () => predict(test_data));
 
-document.getElementById("get").addEventListener("click", () => port.getModel());
+document.getElementById("get").addEventListener("click", () => getModel());

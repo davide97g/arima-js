@@ -2,6 +2,7 @@ const fetch = window["fetch"];
 
 /**
  * Controller that communicates between worker and client
+ * @deprecated
  */
 export default class Port {
   /**
