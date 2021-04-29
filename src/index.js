@@ -11,7 +11,7 @@ const config = {
   model: {
     name: "Process",
     methods: ["train", "predict", "getModel"],
-    url: "./src/process/process.built.js",
+    url: "./src/worker/process.umd.js",
   },
   callback: output,
 };
@@ -166,7 +166,7 @@ function init(model) {
   console.log("[Port] Initializing model", model);
 
   // ? creating an instance of the worker
-  worker = new Worker("./src/port/worker.js");
+  worker = new Worker("./src/worker/worker.js");
 
   // ? callback async function for communication with the worker (only way)
   worker.onmessage = (e) => {
