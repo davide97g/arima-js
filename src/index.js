@@ -1,10 +1,15 @@
 import Port from "./port/port.js";
 
-let output = (res) => console.info("[Index] callback output", res);
+let output = (res) => {
+  console.info("[Index] callback output", res);
+  config.model.methods.forEach((method) => {
+    if (res[method]) console.info("-> Method", method);
+  });
+};
 const config = {
   model: {
     name: "Process",
-    method: "run",
+    methods: ["train", "predict", "getModel"],
     url: "./src/process/process.built.js",
   },
   callback: output,
@@ -91,6 +96,11 @@ const input_data = {
     "257",
     "293",
     "212",
+  ],
+};
+
+const test_data = {
+  data: [
     "246",
     "353",
     "339",
@@ -150,3 +160,9 @@ const params = {
 document
   .getElementById("run")
   .addEventListener("click", () => port.run(params));
+
+document
+  .getElementById("predict")
+  .addEventListener("click", () => port.predict(test_data));
+
+document.getElementById("get").addEventListener("click", () => port.getModel());

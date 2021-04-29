@@ -7,6 +7,7 @@ module.exports = class Process {
     this.records = [];
     this.keys = [];
     this.data = [];
+    this.arimaOpts = {};
   }
 
   /**
@@ -48,6 +49,7 @@ module.exports = class Process {
         0
       );
       console.log("Best params", scores[min]);
+      this.arimaOpts = scores[min].pars; // ? saving the parameters
       const forecastTest = arima(
         ts.slice(0, ts.length - params.timesteps),
         params.timesteps,
@@ -68,6 +70,7 @@ module.exports = class Process {
         d: params.d,
         q: params.q,
       };
+      this.arimaOpts = arimaOpts; // ? saving the parameters
       const forecastTest = arima(
         ts.slice(0, ts.length - params.timesteps),
         params.timesteps,
@@ -84,13 +87,13 @@ module.exports = class Process {
    * @param {*} params
    * @returns the result of the computation
    */
-  run(params) {
+  train(params) {
     if (!params.data && !this.data) {
       throw new Error("No data provided");
     }
 
     this.data = params.data;
-    console.info("[Process] - Running with data", params.data);
+    console.info("[Process] - Training with data", params.data);
     this.keys = Object.keys(params.data).filter((key) => key.length);
 
     this.records = [];
@@ -101,8 +104,27 @@ module.exports = class Process {
         this.records.push(record);
       });
     });
-    // console.info(this.records);
 
     return this._compute(params);
+  }
+
+  /**
+   * Given a set of new data it predicts the trend using the previous computation
+   * @param {*} data
+   * @returns {*} predictions
+   */
+  predict(data) {
+    console.info("[Process] Predicting data", data);
+    // todo: implement predict function
+    return { predictions: [1, 2, 3, 4, 5] };
+  }
+
+  /**
+   * Returns the arima parameters if they are present
+   * @returns {*}
+   */
+  getModel() {
+    console.info("[Process] Returning model parameters");
+    return this.arimaOpts ? { params: this.arimaOpts } : null;
   }
 };
