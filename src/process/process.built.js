@@ -814,7 +814,7 @@ const AutoCor = require("online-autocorrelation");
 
 module.exports = class Process {
   constructor() {
-    console.info("Process()");
+    console.info("[Process] New");
     this.records = [];
     this.keys = [];
     this.data = [];
@@ -901,7 +901,7 @@ module.exports = class Process {
     }
 
     this.data = params.data;
-    console.info("[Process] - Receiving params.data", params.data);
+    console.info("[Process] - Running with data", params.data);
     this.keys = Object.keys(params.data).filter((key) => key.length);
 
     this.records = [];
@@ -912,7 +912,7 @@ module.exports = class Process {
         this.records.push(record);
       });
     });
-    console.info(this.records);
+    // console.info(this.records);
 
     return this._compute(params);
   }

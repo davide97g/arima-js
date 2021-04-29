@@ -1,13 +1,13 @@
 import Port from "./port/port.js";
 
+let output = (res) => console.info("[Index] callback output", res);
 const config = {
-  schema: {
-    model: {
-      name: "Process",
-      run: "run",
-      url: "src/process.built.js",
-    },
+  model: {
+    name: "Process",
+    method: "run",
+    url: "./src/process/process.built.js",
   },
+  callback: output,
 };
 
 const port = new Port(config);
@@ -150,5 +150,3 @@ const params = {
 document
   .getElementById("run")
   .addEventListener("click", () => port.run(params));
-
-window.addEventListener("output", (res) => console.info(res.detail), false);

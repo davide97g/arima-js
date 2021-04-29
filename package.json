@@ -4,7 +4,7 @@
   "description": "ARIMA algorithms in the browser",
   "main": "index.js",
   "scripts": {
-    "build": "browserify src/process.js -s Process > src/process.built.js"
+    "build": "browserify src/process/process.js -s Process > src/process/process.built.js"
   },
   "repository": {
     "type": "git",
