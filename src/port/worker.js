@@ -3,8 +3,8 @@ onmessage = function (e) {
 
   if (data.url || data.code) {
     /*
-      INIT MESSAGE
-    */
+     * INIT MESSAGE
+     */
     let model = data;
 
     if (model.code)
@@ -24,8 +24,8 @@ onmessage = function (e) {
     postMessage({ _status: "loaded" });
   } else {
     /*
-      CALL MESSAGE
-    */
+     * CALL MESSAGE
+     */
     if (!data.method) throw new Error("[Worker] Method not specified");
 
     console.info("[Worker] Method", data.method);
@@ -36,8 +36,8 @@ onmessage = function (e) {
     // Return promise value or just regular value
     // Promise.resolve handles both cases
     Promise.resolve(res).then((r) => {
-      r.method = data.method; // ? appending the method for the caller
-      postMessage(r);
+      // r.method = data.method; // ? appending the method for the caller
+      postMessage({ res: r, method: data.method });
     });
   }
 };

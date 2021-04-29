@@ -1,15 +1,12 @@
 let worker;
 
-const fetch = window["fetch"];
-
 let output = (res) => {
   console.info("[Index] callback output", res);
-  config.model.methods.forEach((method) => {
-    if (res[method]) console.info("-> Method", method); // todo: generalize this
-  });
+  // config.model.methods.forEach((method) => {
+  //   if (res.method == method) console.info("-> Method", method); // todo: generalize this
+  // });
 };
 
-// todo: remove this
 const config = {
   model: {
     name: "Process",
@@ -19,7 +16,7 @@ const config = {
   callback: output,
 };
 
-// const port = new Port(config);
+// * Defining some inputs and constants
 
 const input_data = {
   data: [
@@ -161,19 +158,23 @@ const params = {
   timesteps: 20,
 };
 
-// ****************** THIS IS THE NEW PORT ******************
-
+/**
+ * Create a worker instance and links the callback functions
+ * @param {*} model
+ */
 function init(model) {
   console.log("[Port] Initializing model", model);
 
+  // ? creating an instance of the worker
   worker = new Worker("./src/port/worker.js");
 
+  // ? callback async function for communication with the worker (only way)
   worker.onmessage = (e) => {
     const data = e.data;
     console.log("[Port] Response from worker:", data);
+    // ? check for the initialization of the worker
     if (data._status) console.log("[Port] Worker loaded successfully");
     else {
-      // ? check for the initialization of the worker
       if (!data) throw new Error("[Port] Invalid output data");
       else if (!config.callback || typeof config.callback !== "function")
         throw new Error("[Port] Callback is not a function");
@@ -181,8 +182,10 @@ function init(model) {
     }
   };
 
+  // ? callback async function for error handling from the worker (only way)
   worker.onerror = (e) => console.error("[Port] Error from worker:", e);
 
+  // ? create methods mapping
   if (model.url) {
     fetch(model.url)
       .then((res) => res.text())
@@ -193,6 +196,8 @@ function init(model) {
       });
   }
 }
+
+// * Methods to access Process functionalities
 
 function run(params) {
   if (!params) throw new Error("[Port] Params not specified");
@@ -209,7 +214,10 @@ function getModel() {
   worker.postMessage({ method: "getModel" });
 }
 
+// ? worker setup
 init(config.model);
+
+// * User events
 
 document.getElementById("run").addEventListener("click", () => run(params));
 
