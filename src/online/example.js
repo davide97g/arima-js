@@ -35,21 +35,34 @@ function arima(algorithm, input_file) {
         row.forEach((value) => input.push(parseFloat(value)))
       );
 
+      input = [];
+      for (let i = 0; i < 100000; i++)
+        input.push(i / 100 + Math.random() / 2 + Math.sin(i / (6.28 * 5)));
+
+      test = [];
+      for (let i = 0; i < 100000; i++)
+        test.push(
+          i / 100 +
+            Math.random() / 2 +
+            Math.sin(i / (6.28 * 5)) +
+            (i > 500 && i < 700 ? Math.random() * 2 : 0)
+        );
+
+      // console.info(input);
       // input = [];
-      // for (let i = 0; i < 100000; i++) input.push(2);
 
       let options = {};
       let res = null;
       let predictions = [];
       if (algorithm == "ogd") {
         options = {
-          lrate: 1e-6,
-          mk: 5,
-          init_w: utils.new_random_vector(5),
+          lrate: 1e-5,
+          mk: 10,
+          init_w: utils.new_random_vector(10),
           t_tick: 1,
         };
         res = arima_ogd.train(input, options);
-        predictions = arima_ogd.predict(input, res.w);
+        predictions = arima_ogd.predict(test, res.w);
       } else if (algorithm == "ons") {
         options = {
           lrate: 0.0001,
@@ -68,6 +81,8 @@ function arima(algorithm, input_file) {
 
       saveCSV(algorithm, "RMSE", res.RMSE);
       saveCSV(algorithm, "w", res.w);
+      saveCSV(algorithm, "input", input);
+      saveCSV(algorithm, "test", test);
       saveCSV(algorithm, "predictions", predictions);
     });
   });

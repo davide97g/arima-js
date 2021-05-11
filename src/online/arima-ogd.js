@@ -14,9 +14,17 @@ function train(data, options) {
     for (let j = i - mk; j < i; j++) diff += w[j - i + mk] * data[j];
     diff -= data[i];
 
+    w_sum = 0;
+    for (let j = 0; j < mk; j++) {
+      w_sum += w[j];
+    }
+
+    let r = Math.pow(1 - w_sum, 2);
+
     // ? w = w - data(i-mk:i-1)*2*diff/sqrt(i-mk)*lrate
     for (let j = i - mk; j < i; j++)
       w[j - i + mk] -= ((data[j] * 2 * diff) / Math.sqrt(i - mk + 1)) * lrate;
+    // w[j - i + mk] -= data[j] * 2 * diff * lrate * r;
 
     // ? SE = SE + diff^2;
     SE += Math.pow(diff, 2);
@@ -27,10 +35,20 @@ function train(data, options) {
 
 function predict(data, w) {
   let predictions = [];
+  for (let i = 0; i < w.length; i++) {
+    predictions.push(data[i]);
+  }
+
   for (let i = w.length; i < data.length; i++) {
     let p = 0;
-    for (let j = i - w.length; j < i; j++) p += w[j - i + w.length] * data[j];
-    // p += data[i];
+    for (let j = i - w.length; j < i; j++) {
+      if (i < 600) p += w[j - i + w.length] * data[j];
+      else {
+        // console.info(predictions[j - 10]);
+        p += w[j - i + w.length] * predictions[j - 10 - 1]; // lowers with time
+      }
+      // p += w[j - i + w.length] * data[j];
+    }
     predictions.push(p);
   }
   return predictions;
