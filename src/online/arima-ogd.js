@@ -16,8 +16,7 @@ function train(data, options) {
 
     // ? w = w - data(i-mk:i-1)*2*diff/sqrt(i-mk)*lrate
     for (let j = i - mk; j < i; j++)
-      w[j - i + mk] =
-        w[j - i + mk] - ((data[j] * 2 * diff) / Math.sqrt(i - mk + 1)) * lrate;
+      w[j - i + mk] -= ((data[j] * 2 * diff) / Math.sqrt(i - mk + 1)) * lrate;
 
     // ? SE = SE + diff^2;
     SE += Math.pow(diff, 2);
@@ -25,4 +24,15 @@ function train(data, options) {
   }
   return { RMSE: list, w: w };
 }
-module.exports = { train };
+
+function predict(data, w) {
+  let predictions = [];
+  for (let i = w.length; i < data.length; i++) {
+    let p = 0;
+    for (let j = i - w.length; j < i; j++) p += w[j - i + w.length] * data[j];
+    // p += data[i];
+    predictions.push(p);
+  }
+  return predictions;
+}
+module.exports = { train, predict };

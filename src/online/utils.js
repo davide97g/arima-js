@@ -19,7 +19,7 @@ function new_vector(N) {
 function new_random_vector(N) {
   let v = [];
   for (let i = 0; i < N; i++) {
-    v.push(Math.random());
+    v.push(Math.random() / 10);
   }
   return v;
 }

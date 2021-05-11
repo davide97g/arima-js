@@ -35,16 +35,21 @@ function arima(algorithm, input_file) {
         row.forEach((value) => input.push(parseFloat(value)))
       );
 
+      // input = [];
+      // for (let i = 0; i < 100000; i++) input.push(2);
+
       let options = {};
       let res = null;
+      let predictions = [];
       if (algorithm == "ogd") {
         options = {
-          lrate: 0.0001,
-          mk: 10,
-          init_w: utils.new_random_vector(10),
+          lrate: 1e-6,
+          mk: 5,
+          init_w: utils.new_random_vector(5),
           t_tick: 1,
         };
         res = arima_ogd.train(input, options);
+        predictions = arima_ogd.predict(input, res.w);
       } else if (algorithm == "ons") {
         options = {
           lrate: 0.0001,
@@ -54,15 +59,20 @@ function arima(algorithm, input_file) {
           t_tick: 1,
         };
         res = arima_ons.train(input, options);
+        predictions = arima_ons.predict(input, res.w);
       }
 
-      console.info(algorithm, "w", res.w);
+      let sum = 0;
+      for (let i = 0; i < res.w.length; i++) sum += res.w[i];
+      console.info(algorithm, "w", res.w, sum);
 
       saveCSV(algorithm, "RMSE", res.RMSE);
       saveCSV(algorithm, "w", res.w);
+      saveCSV(algorithm, "predictions", predictions);
     });
   });
 }
 
-arima("ogd", "seq_d1");
-arima("ons", "seq_d1");
+// arima("ogd", "seq_d1");
+arima("ogd", "series");
+// arima("ons", "seq_d1");

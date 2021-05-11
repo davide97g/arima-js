@@ -67,5 +67,7 @@ function train(data, options) {
   }
   return { RMSE: list, w: w };
 }
-
-module.exports = { train };
+function predict(data, w) {
+  return [];
+}
+module.exports = { train, predict };
