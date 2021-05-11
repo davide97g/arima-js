@@ -63,13 +63,10 @@ function arima_ons(data, options) {
       for (let y = 0; y < mk; y++) m2[x][y] += v1[x] * grad[y];
 
     let numerator = new_matrix(mk, mk);
-    for (let x = 0; x < mk; x++) {
-      for (let y = 0; y < mk; y++) {
-        let sum = 0;
-        for (let z = 0; z < mk; z++) sum += m2[x][z] * A_trans[z][y];
-        numerator[x][y] = sum;
-      }
-    }
+    for (let x = 0; x < mk; x++)
+      for (let y = 0; y < mk; y++)
+        for (let z = 0; z < mk; z++)
+          numerator[x][y] += m2[x][z] * A_trans[z][y];
 
     // ! let denominator = 1 + grad * A_trans * grad.T; // 1x1 (scalar)
     let v2 = new_vector(mk); // step 1
@@ -91,7 +88,7 @@ function arima_ons(data, options) {
       for (let k = 0; k < grad.length; k++)
         w[j] -= lrate * grad[j] * A_trans[k][j];
 
-    SE = Math.pow(SE + diff, 2);
+    SE += Math.pow(diff, 2);
     if (i % options.t_tick == 0) list.push(Math.sqrt(SE / i));
   }
   return { RMSE: list, w: w };

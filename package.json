@@ -16,6 +16,7 @@
   "dependencies": {
     "arima": "^0.1.0",
     "csv-parse": "^4.15.4",
+    "csv-writer": "^1.6.0",
     "online-autocorrelation": "0.0.1"
   },
   "devDependencies": {
