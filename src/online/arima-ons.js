@@ -1,34 +1,8 @@
-const fs = require("fs");
-const parse = require("csv-parse");
-const inputPath = "../data/seq_d1.csv";
+const utils = require("./utils");
+const new_matrix = utils.new_matrix;
+const new_vector = utils.new_vector;
 
-function new_matrix(N, M) {
-  let matrix = [];
-  for (let i = 0; i < N; i++) {
-    let row = [];
-    for (let j = 0; j < M; j++) {
-      row.push(0);
-    }
-    matrix.push(row);
-  }
-  return matrix;
-}
-
-function new_vector(N) {
-  let vector = [];
-  for (let i = 0; i < N; i++) vector.push(0);
-  return vector;
-}
-
-function new_random_vector(N) {
-  let v = [];
-  for (let i = 0; i < N; i++) {
-    v.push(Math.random());
-  }
-  return v;
-}
-
-function arima_ons(data, options) {
+function train(data, options) {
   let mk = options.mk;
   let lrate = options.lrate;
   let w = options.init_w;
@@ -94,23 +68,4 @@ function arima_ons(data, options) {
   return { RMSE: list, w: w };
 }
 
-fs.readFile(inputPath, (err, fileData) => {
-  parse(fileData, { columns: false, trim: true }, (err, rows) => {
-    // Your CSV data is in an array of arrys passed to this callback as rows.
-    let input = [];
-    rows.forEach((row) =>
-      row.forEach((value) => input.push(parseFloat(value)))
-    );
-
-    let options = {
-      lrate: 0.01,
-      mk: 10,
-      init_w: new_random_vector(10),
-      epsilon: 0.00001,
-      t_tick: 1,
-    };
-
-    let res = arima_ons(input, options);
-    console.info(res);
-  });
-});
+module.exports = { train };
