@@ -35,33 +35,59 @@ function arima(algorithm, input_file) {
         row.forEach((value) => input.push(parseFloat(value)))
       );
 
-      input = [];
-      for (let i = 0; i < 100000; i++)
-        input.push(i / 100 + Math.random() / 2 + Math.sin(i / (6.28 * 5)));
+      // input = [];
+      // for (let i = 0; i < 100000; i++)
+      //   input.push(i / 100 + Math.random() / 2 + Math.sin(i / (6.28 * 5)));
 
-      test = [];
-      for (let i = 0; i < 100000; i++)
-        test.push(
-          i / 100 +
-            Math.random() / 2 +
-            Math.sin(i / (6.28 * 5)) +
-            (i > 500 && i < 700 ? Math.random() * 2 : 0)
-        );
+      // test = [];
+      // for (let i = 0; i < 100000; i++)
+      //   test.push(
+      //     i / 100 +
+      //       Math.random() / 2 +
+      //       Math.sin(i / (6.28 * 5)) +
+      //       (i > 500 && i < 700 ? Math.random() * 2 : 0)
+      //   );
 
       // console.info(input);
       // input = [];
 
+      const test = input;
+
       let options = {};
       let res = null;
       let predictions = [];
+      let options_best = {};
+      let best = 0;
       if (algorithm == "ogd") {
-        options = {
-          lrate: 1e-5,
-          mk: 10,
-          init_w: utils.new_random_vector(10),
-          t_tick: 1,
-        };
-        res = arima_ogd.train(input, options);
+        const lrates = [1e-2, 1e-3, 1e-4, 1e-5, 1e-6, 1e-7];
+        const mk_list = [15];
+        for (let lrate in lrates) {
+          for (let mk in mk_list) {
+            options = {
+              lrate: lrates[lrate],
+              mk: mk_list[mk],
+              init_w: utils.new_random_vector(mk_list[mk]),
+              t_tick: 1,
+            };
+            res = arima_ogd.train(input, options);
+            let sum = 0;
+            for (let i = 0; i < res.w.length; i++) sum += res.w[i];
+            console.info("lrate", lrates[lrate], "mk", mk_list[mk], ":", sum);
+            if (Math.abs(1 - sum) < Math.abs(1 - best)) {
+              options_best = options;
+              best = sum;
+            }
+          }
+        }
+        console.info(
+          "best",
+          "lrate",
+          options_best.lrate,
+          "mk",
+          options_best.mk
+        );
+        res = arima_ogd.train(input, options_best);
+        // predictions only with the best combination
         predictions = arima_ogd.predict(test, res.w);
       } else if (algorithm == "ons") {
         options = {
